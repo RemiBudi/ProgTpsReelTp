@@ -1,0 +1,4 @@
+open Typecomplex
+
+fun bitrev8(entree:complex^8) returns (out:complex^8)
+fun bitrev16(entree:complex^16) returns (out:complex^16)

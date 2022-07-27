@@ -1,0 +1,2 @@
+val fun write_int(i:int) returns ()
+val fun write_bool(b:bool) returns ()

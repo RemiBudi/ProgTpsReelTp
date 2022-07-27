@@ -1,0 +1,10 @@
+type complex = 
+	{
+		re:float;
+		im:float
+	}
+val fun read_complex() returns (o:complex)
+val fun print_complex(i:complex) returns ()
+val fun print_add() returns ()
+val fun print_sub() returns ()
+val fun print_mul() returns ()

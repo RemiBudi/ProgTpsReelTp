@@ -1,0 +1,46 @@
+open Externc
+const per = 4
+node modulo_cnt<<per:int>> returns (cnt : int)
+var v : int; v_1 : int;
+let
+   nonpreemptive   v = (cnt + 1);
+   nonpreemptive   v_1 = 0 fby v;
+   nonpreemptive   cnt = (v_1 % per)
+tel
+
+node modulo_off<<per:int, off:int>> returns (cnt : int)
+var v : bool; v_2 : int; v_3 : int;
+let
+   nonpreemptive   v = (cnt = ((per + off) - 1));
+   nonpreemptive   v_2 = (cnt + 1);
+   nonpreemptive   v_3 = if v then off else v_2;
+   nonpreemptive   cnt = 0 fby v_3
+tel
+
+node square<<per:int>> returns (clk : bool)
+var v : int; v_4 : bool;
+let
+   nonpreemptive   v = modulo_cnt<<(2 * per)>>();
+   nonpreemptive   v_4 = (v > (per - 1));
+   nonpreemptive   clk = if v_4 then true else false
+tel
+
+node square2<<per:int>> returns (clk : bool)
+var v : int; v_5 : bool;
+let
+   nonpreemptive   v = modulo_cnt<<(3 * per)>>();
+   nonpreemptive   v_5 = (v < per);
+   nonpreemptive   clk = if v_5 then true else false
+tel
+
+node main returns 
+var b : bool; out : int; v : int; v_6 : int; v_7 : int;
+let
+   nonpreemptive   b = square<<per>>();
+   nonpreemptive   v = (out - 1);
+   nonpreemptive   v_6 = (out + 1);
+   nonpreemptive   v_7 = if b then v else v_6;
+   nonpreemptive   out = 0 fby v_7;
+   nonpreemptive   () = Externc.write_int(out)
+tel
+

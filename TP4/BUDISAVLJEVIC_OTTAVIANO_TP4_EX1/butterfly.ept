@@ -1,0 +1,160 @@
+open Typecomplex
+open Print
+open Twiddle
+open Fftc
+open Scan
+
+
+fun complex_add(i1:complex;i2:complex) returns (o:complex)
+let
+	o = {re= i1.re +. i2.re; im = i1.im +. i2.im }
+tel
+
+
+
+fun twid(i1:complex;i2:complex;tw:complex) returns (o:complex)
+var 	
+	tmp:complex;
+let
+		tmp = {re = i1.re-.i2.re; im = i1.im-.i2.im };
+		o = { re= (tmp.re*.tw.re)-.(tmp.im*.tw.im); im = (tmp.re*.tw.im)+.(tmp.im*.tw.re) }
+tel
+
+fun norm<<n:float>>(i:complex) returns (o:complex)
+let 
+	o= { re = i.re/.n; im = i.im/.n};
+tel	
+
+fun bf<<n:int>> (i1:complex^n;i2:complex^n) returns (o1:complex^n;o2:complex^n)
+
+let
+	o1 = map<<n>> complex_add(i1,i2);
+  
+	o2 = map<<n>> twid(i1,i2,twiddle[n..(2*n)-1]); 
+	
+tel	
+
+
+
+fun fft_aux2(i:complex^2) returns (out:complex^2)
+var 
+	i1:complex^1;
+	i2:complex^1;
+	o1:complex^1;
+	o2:complex^1;
+let
+	i1 = [i[0]];
+	i2 = [i[1]];
+	
+	(o1,o2) = bf<<1>>(i1,i2);
+	out = o1@o2;
+tel
+
+
+fun fft_aux4(i:complex^4) returns (out:complex^4)
+var 
+	i1:complex^2;
+	i2:complex^2;
+	o1:complex^2;
+	o2:complex^2;
+	tmp1:complex^2;
+	tmp2:complex^2;
+let
+	i1 = i[0..1];
+	i2 = i[2..3];
+	
+   (tmp1,tmp2) = bf<<2>>(i1,i2);
+	
+   o1 = fft_aux2(tmp1);
+   o2 = fft_aux2(tmp2);
+	
+	out = o1@o2;
+tel
+
+
+fun fft_aux8(i:complex^8) returns (out:complex^8)
+var 
+	i1:complex^4;
+	i2:complex^4;
+	o1:complex^4;
+	o2:complex^4;
+	tmp1:complex^4;
+	tmp2:complex^4;
+let
+	i1 = i[0..3];
+	i2 = i[4..7];
+	
+   (tmp1,tmp2) = bf<<4>>(i1,i2);
+   
+   o1 = fft_aux4(tmp1);
+   o2 = fft_aux4(tmp2);
+	
+	out = o1@o2;
+tel	
+
+
+fun fft_aux16(i:complex^16) returns (out:complex^16)
+var 
+	i1:complex^8;
+	i2:complex^8;
+	o1:complex^8;
+	o2:complex^8;
+	tmp1:complex^8;
+	tmp2:complex^8;
+let
+	i1 = i[0..7];
+	i2 = i[8..15];
+	
+	(tmp1,tmp2) = bf<<8>>(i1,i2);
+
+	o1 = fft_aux8(tmp1);
+	o2 = fft_aux8(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft8(i:complex^8) returns (o:complex^8)
+var tmp:complex^8;
+	norma:complex^8;
+let
+	tmp = fft_aux8(i);
+	norma = map<<8>> (norm<<8.0>>)(tmp);
+	o = bitrev8(norma);
+	() = printVector8(o);
+tel	
+
+
+fun fft16(i:complex^16) returns (o:complex^16)
+var tmp:complex^16;
+	norma:complex^16;
+let
+	tmp = fft_aux16(i);
+	norma = map<<16>> (norm<<16.0>>)(tmp);
+	o = bitrev16(norma);
+	() = printVector16(o);
+tel	
+
+
+
+fun main() returns ()
+var fftVect8:complex^8;
+	fftVect16:complex^16;
+	n:int;
+	result8:complex^8;
+	result16:complex^16;
+let
+	n = scanSize();
+	if  (n=8)
+		then
+			fftVect8 = scanVect8();
+			result8 = fft8(fftVect8);
+			fftVect16 = [{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0}];
+			result16 = [{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0}];
+		else fftVect16 = scanVect16();
+			  result16 = fft16(fftVect16);
+			  fftVect8=[{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0}];
+			result8=[{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0},{re=0.0;im=0.0}];
+	end
+tel	
+	

@@ -1,0 +1,5 @@
+open Typecomplex
+
+val fun scanSize() returns (n:int)
+val fun scanVect8() returns (o:complex^8)
+val fun scanVect16() returns (o:complex^16)

@@ -1,0 +1,4 @@
+val fun print_f(x:int;y:int;idx:int) returns ()
+val fun print_gnc(x:int;y:int;idx:int) returns ()
+val fun print_thermal(idx:int) returns ()
+val fun print_rien() returns ()

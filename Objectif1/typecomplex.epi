@@ -1,0 +1,7 @@
+type complex = 
+	{
+		re:float;
+		im:float
+	}
+	
+const pi:float=  3.141592653598979	

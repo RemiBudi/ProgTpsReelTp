@@ -1,0 +1,326 @@
+open Sndio
+open Complex
+open Fftc
+
+
+fun reduceFloat_50(input:float) returns (output:float)
+let
+	output = input*.0.5;
+tel
+	
+
+fun reduce_50(input:float^256) returns (out:float^256)
+let
+	out = map<<256>>reduceFloat_50(input);
+tel	
+
+
+fun complex_add(i1:complex;i2:complex) returns (o:complex)
+let
+	o = {re= i1.re +. i2.re; im = i1.im +. i2.im }
+tel
+
+fun complex_inverse(i:complex) returns (o:complex)
+let
+	o = {re = i.im; im = i.re}
+tel	
+
+
+fun twid(i1:complex;i2:complex;tw:complex) returns (o:complex)
+var 	
+	tmp:complex;
+let
+		tmp = {re = i1.re-.i2.re; im = i1.im-.i2.im };
+		o = { re= (tmp.re*.tw.re)-.(tmp.im*.tw.im); im = (tmp.re*.tw.im)+.(tmp.im*.tw.re) }
+tel
+
+fun norm<<n:float>>(i:complex) returns (o:complex)
+let 
+	o= { re = i.re/.n; im = i.im/.n};
+tel	
+
+fun normMult<<n:float>>(i:complex) returns (o:complex)
+let 
+	o= { re = i.re*.n; im = i.im*.n};
+tel	
+
+
+fun bf<<n:int>> (i1:complex^n;i2:complex^n) returns (o1:complex^n;o2:complex^n)
+
+let
+	o1 = map<<n>> complex_add(i1,i2);
+  
+	o2 = map<<n>> twid(i1,i2,twiddle[n..(2*n)-1]); 
+	
+tel	
+
+
+
+fun fft_aux2(i:complex^2) returns (out:complex^2)
+var 
+	i1:complex^1;
+	i2:complex^1;
+	o1:complex^1;
+	o2:complex^1;
+let
+	i1 = [i[0]];
+	i2 = [i[1]];
+	
+	(o1,o2) = bf<<1>>(i1,i2);
+	out = o1@o2;
+tel
+
+
+fun fft_aux4(i:complex^4) returns (out:complex^4)
+var 
+	i1:complex^2;
+	i2:complex^2;
+	o1:complex^2;
+	o2:complex^2;
+	tmp1:complex^2;
+	tmp2:complex^2;
+let
+	i1 = i[0..1];
+	i2 = i[2..3];
+	
+   (tmp1,tmp2) = bf<<2>>(i1,i2);
+	
+   o1 = fft_aux2(tmp1);
+   o2 = fft_aux2(tmp2);
+	
+	out = o1@o2;
+tel
+
+
+fun fft_aux8(i:complex^8) returns (out:complex^8)
+var 
+	i1:complex^4;
+	i2:complex^4;
+	o1:complex^4;
+	o2:complex^4;
+	tmp1:complex^4;
+	tmp2:complex^4;
+let
+	i1 = i[0..3];
+	i2 = i[4..7];
+	
+   (tmp1,tmp2) = bf<<4>>(i1,i2);
+   
+   o1 = fft_aux4(tmp1);
+   o2 = fft_aux4(tmp2);
+	
+	out = o1@o2;
+tel	
+
+
+fun fft_aux16(i:complex^16) returns (out:complex^16)
+var 
+	i1:complex^8;
+	i2:complex^8;
+	o1:complex^8;
+	o2:complex^8;
+	tmp1:complex^8;
+	tmp2:complex^8;
+let
+	i1 = i[0..7];
+	i2 = i[8..15];
+	
+	(tmp1,tmp2) = bf<<8>>(i1,i2);
+
+	o1 = fft_aux8(tmp1);
+	o2 = fft_aux8(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft_aux32(i:complex^32) returns (out:complex^32)
+var 
+	i1:complex^16;
+	i2:complex^16;
+	o1:complex^16;
+	o2:complex^16;
+	tmp1:complex^16;
+	tmp2:complex^16;
+let
+	i1 = i[0..15];
+	i2 = i[16..31];
+	
+	(tmp1,tmp2) = bf<<16>>(i1,i2);
+
+	o1 = fft_aux16(tmp1);
+	o2 = fft_aux16(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft_aux64(i:complex^64) returns (out:complex^64)
+var 
+	i1:complex^32;
+	i2:complex^32;
+	o1:complex^32;
+	o2:complex^32;
+	tmp1:complex^32;
+	tmp2:complex^32;
+let
+	i1 = i[0..31];
+	i2 = i[32..63];
+	
+	(tmp1,tmp2) = bf<<32>>(i1,i2);
+
+	o1 = fft_aux32(tmp1);
+	o2 = fft_aux32(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft_aux128(i:complex^128) returns (out:complex^128)
+var 
+	i1:complex^64;
+	i2:complex^64;
+	o1:complex^64;
+	o2:complex^64;
+	tmp1:complex^64;
+	tmp2:complex^64;
+let
+	i1 = i[0..63];
+	i2 = i[64..127];
+	
+	(tmp1,tmp2) = bf<<64>>(i1,i2);
+
+	o1 = fft_aux64(tmp1);
+	o2 = fft_aux64(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft_aux256(i:complex^256) returns (out:complex^256)
+var 
+	i1:complex^128;
+	i2:complex^128;
+	o1:complex^128;
+	o2:complex^128;
+	tmp1:complex^128;
+	tmp2:complex^128;
+let
+	i1 = i[0..127];
+	i2 = i[128..255];
+	
+	(tmp1,tmp2) = bf<<128>>(i1,i2);
+
+	o1 = fft_aux128(tmp1);
+	o2 = fft_aux128(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+
+fun fft_aux512(i:complex^512) returns (out:complex^512)
+var 
+	i1:complex^256;
+	i2:complex^256;
+	o1:complex^256;
+	o2:complex^256;
+	tmp1:complex^256;
+	tmp2:complex^256;
+let
+	i1 = i[0..255];
+	i2 = i[256..511];
+	
+	(tmp1,tmp2) = bf<<256>>(i1,i2);
+
+	o1 = fft_aux256(tmp1);
+	o2 = fft_aux256(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft_aux1024(i:complex^1024) returns (out:complex^1024)
+var 
+	i1:complex^512;
+	i2:complex^512;
+	o1:complex^512;
+	o2:complex^512;
+	tmp1:complex^512;
+	tmp2:complex^512;
+let
+	i1 = i[0..511];
+	i2 = i[512..1023];
+	
+	(tmp1,tmp2) = bf<<512>>(i1,i2);
+
+	o1 = fft_aux512(tmp1);
+	o2 = fft_aux512(tmp2);
+
+	out = o1@o2;
+tel	
+
+
+fun fft1024(i:complex^1024) returns (o:complex^1024)
+var tmp:complex^1024;
+	norma:complex^1024;
+let
+	tmp = fft_aux1024(i);
+	norma = map<<1024>> (norm<<1024.0>>)(tmp);
+	o = bitrev1024(norma);
+tel	
+
+
+fun float2complex(i:float) returns (o:complex)
+let
+	o = {re= i; im = 0.0 }
+tel
+
+fun complex2float(i:complex) returns (o:float)
+let
+	o = i.re;
+tel	
+
+
+fun ifft1024(i:complex^1024) returns (o:complex^1024)
+var
+	iInv:complex^1024;
+	iInvfft:complex^1024;
+	i2:complex^1024;
+let
+	iInv = map<<1024>> complex_inverse (i);
+	iInvfft = fft1024(iInv);
+	i2 = map<<1024>> complex_inverse (iInvfft);
+	o = map<<1024>> (normMult<<1024.0>>) (i2);
+tel	
+
+
+
+node main() returns ()
+var
+	size:int^1;
+	s0, s1, s2, s3,t:float^256;
+	s:float^1024;
+	c0,c1,c2:complex^1024;
+	c3:complex^256;
+	zero_f_256:float^256;
+let
+	zero_f_256 = (0.0^256);
+	size = [256];
+	s0 = read_samples(size);
+	s1 = zero_f_256 fby s0;
+	s2 = zero_f_256 fby s1;
+	s3 = zero_f_256 fby s2;
+	
+	s = s0@s1@s2@s3;
+	c0 = map<<1024>> float2complex(s);
+	
+	c1 = fft1024(c0);
+	c2 = ifft1024(c1);
+	
+	c3 = c2[0..255];
+	
+	t = map<<256>> complex2float(c3);
+
+	() = write_samples(size,t);
+tel		

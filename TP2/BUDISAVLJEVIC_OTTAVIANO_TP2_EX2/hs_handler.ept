@@ -1,0 +1,15 @@
+open Externc
+open Fun_g
+
+node hs_handler(hs:bool) returns (id:int)
+var x,y : int;
+
+let
+	y=15 fby x whenot hs;
+	
+	
+	id = merge hs
+		(true -> g())
+		(false ->  f1(y));
+	x = f2(id) whenot hs;	
+tel		

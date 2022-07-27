@@ -1,0 +1,6 @@
+open Typecomplex
+
+
+val fun init_twiddle1024 () returns (twiddle:complex^1024)
+const twiddle:complex^1024
+

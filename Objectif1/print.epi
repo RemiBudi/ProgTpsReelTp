@@ -1,0 +1,6 @@
+open Typecomplex
+
+val fun print_complex(i:complex) returns ()
+val fun printVector8 (i:complex^8) returns ()
+val fun printVector16 (i:complex^16) returns ()
+

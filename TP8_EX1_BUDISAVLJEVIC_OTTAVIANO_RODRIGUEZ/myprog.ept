@@ -1,0 +1,26 @@
+open Sndio
+
+
+fun reduceFloat_50(input:float) returns (output:float)
+let
+	output = input*.0.5;
+tel
+	
+
+fun reduce_50(input:float^256) returns (out:float^256)
+let
+	out = map<<256>>reduceFloat_50(input);
+tel	
+
+
+node main() returns ()
+var
+	size:int^1;
+	input:float^256;
+	out:float^256;
+let
+	size = [256];
+	input = read_samples(size);
+	out = reduce_50(input);
+	() = write_samples(size,out);
+tel		

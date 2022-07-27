@@ -1,0 +1,4 @@
+node fun_g () returns (cnt:int)
+let
+	cnt = 300 fby (cnt+50);
+tel

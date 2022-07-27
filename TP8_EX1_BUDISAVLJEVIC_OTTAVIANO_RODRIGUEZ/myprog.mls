@@ -1,0 +1,20 @@
+open Sndio
+node reduceFloat_50(input : float) returns (output : float)
+let
+   nonpreemptive   output = (input *. 0.500000)
+tel
+
+node reduce_50(input : float^256) returns (out : float^256)
+let
+   nonpreemptive   out = (map (reduceFloat_50())<<256>>)(())(input)
+tel
+
+node main returns 
+var out : float^256; input : float^256; size : int^1;
+let
+   nonpreemptive   size = [256];
+   nonpreemptive   input = Sndio.read_samples(size);
+   nonpreemptive   out = reduce_50(input);
+   nonpreemptive   () = Sndio.write_samples(size, out)
+tel
+

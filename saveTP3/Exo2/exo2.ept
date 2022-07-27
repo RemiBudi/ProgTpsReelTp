@@ -1,0 +1,40 @@
+open ComplFunc
+
+fun complex_add(i1:complex;i2:complex) returns (o:complex)
+let
+	o = {re= i1.re +. i2.re; im = i1.im +. i2.im }
+tel
+
+fun complex_vector_add<<n:int>>(i1:complex^n;i2:complex^n) returns (o:complex^n)
+let
+	o = map<<n>>complex_add(i1,i2);
+tel
+
+
+fun complex_vector_sum<<n:int>>(i1:complex^n) returns (o:complex)
+var 
+	initial:complex;
+
+let
+	initial = {re=0.0;im=0.0};
+	o = fold<<n>> complex_add(i1,initial);
+tel
+
+
+
+
+node main() returns()
+var
+	c1:complex_vect;
+	c2:complex_vect;
+	add:complex_vect;
+	sum:complex;
+	
+let
+		c1=read_complex_vector();
+		c2=read_complex_vector();
+		add = complex_vector_add<<3>>(c1,c2);
+		() = print_complex_vector(add);
+		sum = complex_vector_sum<<3>>(add);
+		() = print_complex(sum);
+tel

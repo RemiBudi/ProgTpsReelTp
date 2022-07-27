@@ -1,0 +1,9 @@
+type complex = 
+	{
+		re:float;
+		im:float
+	}
+type complex_vect = complex^3
+val fun read_complex_vector() returns (o:complex_vect)
+val fun print_complex_vector(i:complex_vect) returns ()
+val fun print_complex(i:complex) returns ()

@@ -1,0 +1,36 @@
+open ComplFunc
+
+fun complex_add(i1:complex;i2:complex) returns (o:complex)
+let
+	() = print_add();
+	o = {re= i1.re +. i2.re; im = i1.im +. i2.im }
+tel
+
+fun complex_sub(i1:complex;i2:complex) returns (o:complex)
+let
+	() = print_sub();
+	o = {re = i1.re-.i2.re; im = i1.im-.i2.im }
+tel
+
+
+fun complex_mul(i1:complex;i2:complex) returns (o:complex)
+let
+	() = print_mul();
+	o = { re= (i1.re*.i2.re)-.(i1.im*.i2.im); im = (i1.re*.i2.im)+.(i1.im*.i2.re) }
+tel
+
+
+node main() returns()
+var
+	c1:complex;
+	c2:complex;
+	
+let
+		c1=read_complex();
+		c2=read_complex();
+		() = print_complex(c1);
+		() = print_complex(c2);
+		() = print_complex(complex_add(c1,c2));
+		() = print_complex(complex_sub(c1,c2));
+		() = print_complex(complex_mul(c1,c2));
+tel

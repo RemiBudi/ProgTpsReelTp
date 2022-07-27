@@ -1,0 +1,11 @@
+type complex = 
+	{
+		re:float;
+		im:float
+	}
+	
+const pi:float=  3.141592653598979	
+
+val fun init_twiddle1024 () returns (twiddle:complex^1024)
+const twiddle:complex^1024
+

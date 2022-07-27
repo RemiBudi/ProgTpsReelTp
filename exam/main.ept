@@ -1,0 +1,41 @@
+open Externc
+
+const per:int=4
+
+node modulo_cnt<<per:int>>() returns (cnt:int)
+let
+	cnt = 0 fby (cnt+1)%per;
+tel	
+
+
+
+node modulo_off<<per:int;off:int>>() returns (cnt:int)
+let	
+	cnt = 0 fby if
+	(cnt = (per+off-1)) 
+		then off 
+	else 
+		cnt+1;
+tel	 
+
+
+node square<<per:int>>() returns (clk:bool)
+let
+	clk = if modulo_cnt<<2*per>>() > per-1 then true else false;
+tel	
+
+node square2<<per:int>>() returns (clk:bool)
+let
+	clk = if modulo_cnt<<3*per>>() < per then true else false;
+tel	
+
+
+
+node main() returns ()
+var out:int;
+	b:bool;
+let
+	b = square<<per>>();
+    out = 0 fby if b then out-1 else out+1;	
+	() = write_int(out);
+tel	
